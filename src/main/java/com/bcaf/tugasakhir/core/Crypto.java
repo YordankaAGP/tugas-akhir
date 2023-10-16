@@ -10,8 +10,9 @@ import org.bouncycastle.util.encoders.Hex;
 public class Crypto {
 
     private static String defaultKey = "aafd12f438cae52538b479e3199ddec2f06cb58faafd12f6";
+
     public static String performEncrypt(String keyText, String plainText) {
-        try{
+        try {
             byte[] key = Hex.decode(keyText.getBytes());
             byte[] ptBytes = plainText.getBytes();
             BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESLightEngine()));
@@ -20,7 +21,7 @@ public class Crypto {
             int oLen = cipher.processBytes(ptBytes, 0, ptBytes.length, rv, 0);
             cipher.doFinal(rv, oLen);
             return new String(Hex.encode(rv));
-        } catch(Exception e) {
+        } catch (Exception e) {
             return "Error";
         }
     }
@@ -39,7 +40,7 @@ public class Crypto {
             int oLen = cipher.processBytes(cipherText, 0, cipherText.length, rv, 0);
             cipher.doFinal(rv, oLen);
             return new String(rv).trim();
-        } catch(Exception e) {
+        } catch (Exception e) {
             return "Error";
         }
     }
@@ -50,19 +51,19 @@ public class Crypto {
 
     public static void main(String[] args) {
 
-        String strToEncrypt = "1";//put text to encrypt in here
+        String strToEncrypt = "12";// put text to encrypt in here
         String encryptionResult = new Crypto().performEncrypt(strToEncrypt);
-        System.out.println("Encryption Result : "+encryptionResult);
+        System.out.println("Encryption Result : " + encryptionResult);
         // KEY -> aafd12f438cae52538b479e3199ddec2f06cb58faafd12f6
-        //ENCRYPT -> 528b01943544a1dcef7a692a0628e46b ->
+        // ENCRYPT -> 528b01943544a1dcef7a692a0628e46b ->
 
-        //ENCRYPT -> bdcc9507be280e3e5489a5dce01b42ea
-        //KEY -> aafd12f438cae52538b479e2089ddec2f06cb58faafd12f6
+        // ENCRYPT -> bdcc9507be280e3e5489a5dce01b42ea
+        // KEY -> aafd12f438cae52538b479e2089ddec2f06cb58faafd12f6
 
-        String strToDecrypt = "bee0c7b3ba53afc908be65c100c43d9b";//put text to decrypt in here
+        String strToDecrypt = "edc4980dd24791f7ab31d741f1f405d0";// put text to decrypt in here
         String decriptionResult = new Crypto().performDecrypt(strToDecrypt);
-        System.out.println("Decryption Result : "+decriptionResult);
+        System.out.println("Decryption Result : " + decriptionResult);
 
-//        System.out.println("Untuk VIVO X5 DEFAULT AJA BELUM DI SET ".length());
+        // System.out.println("Untuk VIVO X5 DEFAULT AJA BELUM DI SET ".length());
     }
 }
