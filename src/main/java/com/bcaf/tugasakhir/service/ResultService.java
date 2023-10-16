@@ -137,13 +137,13 @@ public class ResultService implements IService<Result> {
             );
         }
 
-        List<ResultByAssessmentDTO> transformedResults = modelMapper.map(results, new TypeToken<List<ResultByAssessmentDTO>>() {}.getType());
+//        List<ResultByAssessmentDTO> transformedResults = modelMapper.map(results, new TypeToken<List<ResultByAssessmentDTO>>() {}.getType());
 
 
         return new ResponseHandler().generateResponse(
                 "Data Ditemukan",
                 HttpStatus.OK,
-                transformedResults,
+                results,
                 null,
                 request
         );
@@ -186,13 +186,10 @@ public class ResultService implements IService<Result> {
             );
         }
 
-        List<ResultByAssessmentDTO> transformedResults = modelMapper.map(results, new TypeToken<List<ResultByAssessmentDTO>>() {}.getType());
-
-
         return new ResponseHandler().generateResponse(
                 "Data Ditemukan",
                 HttpStatus.OK,
-                transformedResults,
+                results,
                 null,
                 request
         );

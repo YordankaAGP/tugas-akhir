@@ -18,7 +18,8 @@ public class Choice implements Serializable {
 
     @Column(name = "Value")
     private String value;
-    
+
+    @JsonIgnore
     @Column(name = "IsTrue")
     private boolean isTrue = false;
 

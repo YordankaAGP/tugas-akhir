@@ -24,7 +24,7 @@ public class AnswerDTO {
     @NotNull(message = "Score Tidak Boleh Null")
     @Min(0)
     @Max(1)
-    private double score;
+    private Float score;
 
     public Long getId() {
         return id;
@@ -50,11 +50,11 @@ public class AnswerDTO {
         this.choice = choice;
     }
 
-    public double getScore() {
+    public Float getScore() {
         return score;
     }
 
-    public void setScore(double score) {
+    public void setScore(Float score) {
         this.score = score;
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 public class ResultByAssessmentDTO {
     private Long id;
 
-    private double finalScore;
+    private Float finalScore;
 
     private Date createdAt = new Date();
 
@@ -20,7 +20,7 @@ public class ResultByAssessmentDTO {
     @NotNull(message = "Answers Tidak Boleh Null!")
     @NotEmpty(message = "Answers Tidak Boleh Kosong!")
     @Valid
-    private List<Answer> answers;
+    private List<AnswerDTO> answers;
 
     public Long getId() {
         return id;
@@ -30,11 +30,11 @@ public class ResultByAssessmentDTO {
         this.id = id;
     }
 
-    public double getFinalScore() {
+    public Float getFinalScore() {
         return finalScore;
     }
 
-    public void setFinalScore(double finalScore) {
+    public void setFinalScore(Float finalScore) {
         this.finalScore = finalScore;
     }
 
@@ -54,11 +54,11 @@ public class ResultByAssessmentDTO {
         this.user = user;
     }
 
-    public List<Answer> getAnswers() {
+    public List<AnswerDTO> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(List<Answer> answers) {
+    public void setAnswers(List<AnswerDTO> answers) {
         this.answers = answers;
     }
 }

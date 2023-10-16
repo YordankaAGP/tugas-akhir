@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -462,10 +463,53 @@ public class AssessmentService implements IService<Assessment> {
         );
     }
 
+    public ResponseEntity<Object> findCompleteByUserId(Long id, HttpServletRequest request) {
+        List<Assessment> assessments;
+        try {
+            assessments = assessmentRepo.findByParticipantsId(id);
+            if (assessments.size() == 0) {
+                return new ResponseHandler().generateResponse(
+                        "Assessment tidak Ditemukan",//message
+                        HttpStatus.NOT_FOUND,//httpstatus
+                        null,//object
+                        "FV002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                        request
+                );
+            }
+        } catch (Exception e) {
+            strExceptionArr[1] = " findCompleteByUserId(HttpServletRequest request) --- LINE 480 \n" + RequestCapture.allRequest(request);
+            LoggingFile.exceptionStringz(strExceptionArr, e, OtherConfiguration.getFlagLoging());
+            return new ResponseHandler().generateResponse(
+                    "Data tidak Valid",//message
+                    HttpStatus.INTERNAL_SERVER_ERROR,//httpstatus
+                    null,//object
+                    "FE002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                    request
+            );
+        }
+
+        List<Assessment> filteredAssessments = assessments.stream().filter(
+                assessment -> assessment.getResults().stream().anyMatch(
+                        result -> result.getUser().getId().equals(id)
+                )
+        ).collect(Collectors.toList());
+
+
+        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(filteredAssessments, new TypeToken<List<GetAssessmentDTO>>() {}.getType());
+
+        return new ResponseHandler().generateResponse(
+                "Data Ditemukan",
+                HttpStatus.OK,
+                transformedAssessments,
+                null,
+                request
+        );
+    }
+
     public ResponseEntity<Object> findIncompleteByUserId(Long id, HttpServletRequest request) {
         List<Assessment> assessments;
         try {
-            assessments = assessmentRepo.findByResults_User_IdNot(id);
+            assessments = assessmentRepo.findByParticipantsId(id);
             if (assessments.size() == 0) {
                 return new ResponseHandler().generateResponse(
                         "Assessment tidak Ditemukan",//message
@@ -487,8 +531,14 @@ public class AssessmentService implements IService<Assessment> {
             );
         }
 
-        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(assessments, new TypeToken<List<GetAssessmentDTO>>() {}.getType());
+        List<Assessment> filteredAssessments = assessments.stream().filter(
+                assessment -> !assessment.getResults().stream().anyMatch(
+                        result -> result.getUser().getId().equals(id)
+                    )
+                ).collect(Collectors.toList());
 
+
+        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(filteredAssessments, new TypeToken<List<GetAssessmentDTO>>() {}.getType());
 
         return new ResponseHandler().generateResponse(
                 "Data Ditemukan",

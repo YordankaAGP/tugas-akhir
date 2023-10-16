@@ -58,6 +58,12 @@ public class AssessmentController {
         return assessmentService.findIncompleteByUserId(id, request);
     }
 
+    @GetMapping("/user/{id}/complete")
+    public ResponseEntity<Object> findCompleteByUserId(@PathVariable(value = "id") Long id, HttpServletRequest request)
+    {
+        return assessmentService.findCompleteByUserId(id, request);
+    }
+
 
     @PutMapping("/{id}/participant")
     public ResponseEntity<Object> addParticipant(@PathVariable(value = "id") Long id, @Valid @RequestBody IdDTO idDTO, HttpServletRequest request)

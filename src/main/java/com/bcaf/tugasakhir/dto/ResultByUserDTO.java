@@ -9,7 +9,7 @@ import java.util.List;
 public class ResultByUserDTO {
     private Long id;
 
-    private double finalScore;
+    private Float finalScore;
 
     private Date createdAt = new Date();
 
@@ -33,11 +33,11 @@ public class ResultByUserDTO {
         this.id = id;
     }
 
-    public double getFinalScore() {
+    public Float getFinalScore() {
         return finalScore;
     }
 
-    public void setFinalScore(double finalScore) {
+    public void setFinalScore(Float finalScore) {
         this.finalScore = finalScore;
     }
 

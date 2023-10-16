@@ -9,6 +9,4 @@ public interface AssessmentRepo extends JpaRepository<Assessment,Long> {
     public List<Assessment> findByTitleContains(String n);
 
     public List<Assessment> findByParticipantsId(Long id);
-
-    public List<Assessment> findByResults_User_IdNot(Long id);
 }

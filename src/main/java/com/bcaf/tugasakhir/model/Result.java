@@ -17,7 +17,7 @@ public class Result implements Serializable {
     private Long id;
 
     @Column(name = "FinalScore")
-    private double finalScore;
+    private Float finalScore;
 
     @Column(name = "CreatedAt", columnDefinition = "DATETIME NOT NULL default GETDATE()")
     private Date createdAt = new Date();;
@@ -46,11 +46,11 @@ public class Result implements Serializable {
         this.id = id;
     }
 
-    public double getFinalScore() {
+    public Float getFinalScore() {
         return finalScore;
     }
 
-    public void setFinalScore(double finalScore) {
+    public void setFinalScore(Float finalScore) {
         this.finalScore = finalScore;
     }
 

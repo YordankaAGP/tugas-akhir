@@ -8,8 +8,6 @@ public class AnswerChoiceDTO {
 
     private String value;
 
-    private boolean isTrue;
-
     public Long getId() {
         return id;
     }
@@ -24,13 +22,5 @@ public class AnswerChoiceDTO {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public boolean isTrue() {
-        return isTrue;
-    }
-
-    public void setTrue(boolean aTrue) {
-        isTrue = aTrue;
     }
 }
