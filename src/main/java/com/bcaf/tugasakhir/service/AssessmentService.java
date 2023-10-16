@@ -20,9 +20,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import java.util.*;
 
 @Service
@@ -51,17 +54,15 @@ public class AssessmentService implements IService<Assessment> {
         this.modelMapper = modelMapper;
     }
 
-
     @Override
     public ResponseEntity<Object> save(Assessment assessment, HttpServletRequest request) {
         if (assessment == null) {
             return new ResponseHandler().generateResponse(
-                    "Data tidak Valid",//message
-                    HttpStatus.BAD_REQUEST,//httpstatus
-                    null,//object
-                    "FV002001",//errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
-                    request
-            );
+                    "Data tidak Valid", // message
+                    HttpStatus.BAD_REQUEST, // httpstatus
+                    null, // object
+                    "FV002001", // errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
+                    request);
         }
 
         try {
@@ -80,25 +81,69 @@ public class AssessmentService implements IService<Assessment> {
             assessment.getQuestions().addAll(questions);
             assessmentRepo.save(assessment);
         } catch (Exception e) {
-            strExceptionArr[1] = "save(Assessment assessment, HttpServletRequest request) --- LINE 66 \n" + RequestCapture.allRequest(request);
+            strExceptionArr[1] = "save(Assessment assessment, HttpServletRequest request) --- LINE 66 \n"
+                    + RequestCapture.allRequest(request);
             LoggingFile.exceptionStringz(strExceptionArr, e, OtherConfiguration.getFlagLoging());
             LogTable.inputLogRequest(logRequestRepo, strExceptionArr, e, OtherConfiguration.getFlagLogTable());
             return new ResponseHandler().generateResponse(
-                    "Data Gagal Disimpan",//message
-                    HttpStatus.INTERNAL_SERVER_ERROR,//httpstatus
-                    null,//object
-                    "FE002001",//errorCode Fail Error modul-code 001 sequence 001 range 001 - 010
-                    request
-            );
+                    "Data Gagal Disimpan", // message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // httpstatus
+                    null, // object
+                    "FE002001", // errorCode Fail Error modul-code 001 sequence 001 range 001 - 010
+                    request);
         }
 
         return new ResponseHandler().generateResponse(
-                "Data Berhasil Disimpan",//message
-                HttpStatus.CREATED,//httpstatus created
-                null,//object
-                null,//errorCode diisi null ketika data berhasil disimpan
-                request
-        );
+                "Data Berhasil Disimpan", // message
+                HttpStatus.CREATED, // httpstatus created
+                null, // object
+                null, // errorCode diisi null ketika data berhasil disimpan
+                request);
+    }
+
+    public ResponseEntity<Object> update(Long id, PostAssessmentDTO postAssessmentDTO, HttpServletRequest request) {
+        if (postAssessmentDTO == null) {
+            return new ResponseHandler().generateResponse(
+                    "Data tidak Valid", // Message
+                    HttpStatus.BAD_REQUEST, // HTTP status
+                    null, // Object
+                    "FV002001", // ErrorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
+                    request);
+        }
+
+        Assessment existingAssessment = assessmentRepo.findById(id)
+                .orElse(null);
+
+        if (existingAssessment == null) {
+            return new ResponseHandler().generateResponse(
+                    "Assessment not found with id: " + id, // Message
+                    HttpStatus.NOT_FOUND, // HTTP status
+                    null, // Object
+                    "FE002002", // ErrorCode Fail Error (Assessment not found)
+                    request);
+        }
+
+        try {
+            // Map fields from updateAssessmentDTO to existingAssessment
+            modelMapper.map(postAssessmentDTO, existingAssessment);
+
+            assessmentRepo.save(existingAssessment);
+        } catch (Exception e) {
+
+            return new ResponseHandler().generateResponse(
+                    "Data Gagal Diperbarui", // Message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // HTTP status
+                    null, // Object
+                    "FE002001", // ErrorCode Fail Error modul-code 001 sequence 001 range 001 - 010
+                    request);
+        }
+
+        return new ResponseHandler().generateResponse(
+                "Data Berhasil Diperbarui", // Message
+                HttpStatus.OK, // HTTP status OK
+                null, // Object
+                null, // ErrorCode diisi null ketika data berhasil diperbarui
+                request);
     }
 
     public ResponseEntity<Object> addParticipant(Long id, IdDTO idDTO, HttpServletRequest request) throws Exception {
@@ -108,23 +153,20 @@ public class AssessmentService implements IService<Assessment> {
 
         if (participants.size() == 0) {
             return new ResponseHandler().generateResponse(
-                    "Data tidak Valid",//message
-                    HttpStatus.BAD_REQUEST,//httpstatus
-                    "User tidak ditemukan!",//object
-                    "FV002001",//errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
-                    request
-            );
+                    "Data tidak Valid", // message
+                    HttpStatus.BAD_REQUEST, // httpstatus
+                    "User tidak ditemukan!", // object
+                    "FV002001", // errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
+                    request);
         }
-
 
         if (assessment == null) {
             return new ResponseHandler().generateResponse(
-                    "Data tidak Valid",//message
-                    HttpStatus.BAD_REQUEST,//httpstatus
-                    "Assessment tidak ditemukan!",//object
-                    "FV002001",//errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
-                    request
-            );
+                    "Data tidak Valid", // message
+                    HttpStatus.BAD_REQUEST, // httpstatus
+                    "Assessment tidak ditemukan!", // object
+                    "FV002001", // errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
+                    request);
         }
 
         try {
@@ -132,7 +174,8 @@ public class AssessmentService implements IService<Assessment> {
                 Long newUserId = newUser.getId();
 
                 // Check if any book with the same ID already exists in the list.
-                boolean userExists = assessment.getParticipants().stream().anyMatch(existingUser -> existingUser.getId().equals(newUserId));
+                boolean userExists = assessment.getParticipants().stream()
+                        .anyMatch(existingUser -> existingUser.getId().equals(newUserId));
 
                 if (!userExists) {
                     // If no book with the same ID is found, add the new book to the list.
@@ -143,38 +186,37 @@ public class AssessmentService implements IService<Assessment> {
 
             if (!isChanged) {
                 return new ResponseHandler().generateResponse(
-                        "Tidak ada participant yang ditambah",//message
-                        HttpStatus.BAD_REQUEST,//httpstatus
-                        "Participant sudah didalam assessment!",//object
-                        "FV002001",//errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
-                        request
-                );
+                        "Tidak ada participant yang ditambah", // message
+                        HttpStatus.BAD_REQUEST, // httpstatus
+                        "Participant sudah didalam assessment!", // object
+                        "FV002001", // errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
+                        request);
             }
 
             assessmentRepo.save(assessment);
         } catch (Exception e) {
-            strExceptionArr[1] = "addParticipant(Long id, IdDTO idDTO, HttpServletRequest request) --- LINE 109 \n" + RequestCapture.allRequest(request);
+            strExceptionArr[1] = "addParticipant(Long id, IdDTO idDTO, HttpServletRequest request) --- LINE 109 \n"
+                    + RequestCapture.allRequest(request);
             LoggingFile.exceptionStringz(strExceptionArr, e, OtherConfiguration.getFlagLoging());
             LogTable.inputLogRequest(logRequestRepo, strExceptionArr, e, OtherConfiguration.getFlagLogTable());
             return new ResponseHandler().generateResponse(
-                    "Data Gagal Disimpan",//message
-                    HttpStatus.INTERNAL_SERVER_ERROR,//httpstatus
-                    null,//object
-                    "FE-Auth001",//errorCode Fail Error modul-code 001 sequence 001 range 001 - 010
-                    request
-            );
+                    "Data Gagal Disimpan", // message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // httpstatus
+                    null, // object
+                    "FE-Auth001", // errorCode Fail Error modul-code 001 sequence 001 range 001 - 010
+                    request);
         }
 
         return new ResponseHandler().generateResponse(
-                "Participant berhasil ditambahkan",//message
-                HttpStatus.CREATED,//httpstatus created
+                "Participant berhasil ditambahkan", // message
+                HttpStatus.CREATED, // httpstatus created
                 null,
                 null,
-                request
-        );
+                request);
     }
 
-    public ResponseEntity<Object> addQuestion(Long id, AddQuestionDTO body, HttpServletRequest request) throws Exception {
+    public ResponseEntity<Object> addQuestion(Long id, AddQuestionDTO body, HttpServletRequest request)
+            throws Exception {
         List<QuestionDTO> questionsBody = body.getQuestions();
         List<Question> questions = modelMapper.map(questionsBody, new TypeToken<List<Question>>() {
         }.getType());
@@ -182,12 +224,11 @@ public class AssessmentService implements IService<Assessment> {
 
         if (assessment == null) {
             return new ResponseHandler().generateResponse(
-                    "Data tidak Valid",//message
-                    HttpStatus.BAD_REQUEST,//httpstatus
-                    "Assessment tidak ditemukan!",//object
-                    "FV002001",//errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
-                    request
-            );
+                    "Data tidak Valid", // message
+                    HttpStatus.BAD_REQUEST, // httpstatus
+                    "Assessment tidak ditemukan!", // object
+                    "FV002001", // errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
+                    request);
         }
 
         try {
@@ -197,50 +238,49 @@ public class AssessmentService implements IService<Assessment> {
             assessment.getQuestions().addAll(questions);
             assessmentRepo.save(assessment);
         } catch (Exception e) {
-            strExceptionArr[1] = "addQuestion(Long id, AddQuestionDTO addQuestionDTO, HttpServletRequest request) --- LINE 189 \n" + RequestCapture.allRequest(request);
+            strExceptionArr[1] = "addQuestion(Long id, AddQuestionDTO addQuestionDTO, HttpServletRequest request) --- LINE 189 \n"
+                    + RequestCapture.allRequest(request);
             LoggingFile.exceptionStringz(strExceptionArr, e, OtherConfiguration.getFlagLoging());
             LogTable.inputLogRequest(logRequestRepo, strExceptionArr, e, OtherConfiguration.getFlagLogTable());
             return new ResponseHandler().generateResponse(
-                    "Data Gagal Disimpan",//message
-                    HttpStatus.INTERNAL_SERVER_ERROR,//httpstatus
-                    null,//object
-                    "FE-Auth001",//errorCode Fail Error modul-code 001 sequence 001 range 001 - 010
-                    request
-            );
+                    "Data Gagal Disimpan", // message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // httpstatus
+                    null, // object
+                    "FE-Auth001", // errorCode Fail Error modul-code 001 sequence 001 range 001 - 010
+                    request);
         }
 
         return new ResponseHandler().generateResponse(
-                "Question berhasil ditambahkan",//message
-                HttpStatus.CREATED,//httpstatus created
+                "Question berhasil ditambahkan", // message
+                HttpStatus.CREATED, // httpstatus created
                 null,
                 null,
-                request
-        );
+                request);
     }
 
-    public ResponseEntity<Object> addResult(Long id, ResultByAssessmentDTO resultByAssessmentDTO, HttpServletRequest request) throws Exception {
+    public ResponseEntity<Object> addResult(Long id, ResultByAssessmentDTO resultByAssessmentDTO,
+            HttpServletRequest request) throws Exception {
         System.out.println("asdasdsadsadasdads");
         String authorization = request.getHeader("Authorization");
-        String token = authorization.substring(7);//memotong setelah kata Bearer+spasi = 7 digit
+        String token = authorization.substring(7);// memotong setelah kata Bearer+spasi = 7 digit
         String username = jwtUtility.getUsernameFromToken(token);
         Usr currentUser = usrRepo.findByUsername(username).orElse(null);
 
-        Result result = modelMapper.map(resultByAssessmentDTO, new TypeToken<Result>() {}.getType());
+        Result result = modelMapper.map(resultByAssessmentDTO, new TypeToken<Result>() {
+        }.getType());
         Assessment assessment = assessmentRepo.findById(id).orElse(null);
 
         if (assessment == null) {
             return new ResponseHandler().generateResponse(
-                    "Data tidak Valid",//message
-                    HttpStatus.BAD_REQUEST,//httpstatus
-                    "Assessment tidak ditemukan!",//object
-                    "FV002001",//errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
-                    request
-            );
+                    "Data tidak Valid", // message
+                    HttpStatus.BAD_REQUEST, // httpstatus
+                    "Assessment tidak ditemukan!", // object
+                    "FV002001", // errorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
+                    request);
         }
 
         boolean isParticipant = assessment.getParticipants().stream().anyMatch(
-                p -> p.getId().equals(currentUser.getId())
-        );
+                p -> p.getId().equals(currentUser.getId()));
 
         System.out.println(isParticipant);
 
@@ -250,13 +290,11 @@ public class AssessmentService implements IService<Assessment> {
                     HttpStatus.UNAUTHORIZED,
                     "User tidak memiliki akses",
                     "FV002001",
-                    request
-            );
+                    request);
         }
 
         boolean isAlreadyAnswered = assessment.getResults().stream().anyMatch(
-                r -> r.getUser().getId().equals(currentUser.getId())
-        );
+                r -> r.getUser().getId().equals(currentUser.getId()));
 
         if (isAlreadyAnswered) {
             return new ResponseHandler().generateResponse(
@@ -264,8 +302,7 @@ public class AssessmentService implements IService<Assessment> {
                     HttpStatus.UNAUTHORIZED,
                     "User sudah mengisi tes",
                     "FV002001",
-                    request
-            );
+                    request);
         }
 
         List<Question> questionBank = assessment.getQuestions();
@@ -276,8 +313,7 @@ public class AssessmentService implements IService<Assessment> {
                     HttpStatus.BAD_REQUEST,
                     "Question kosong!",
                     "FV002001",
-                    request
-            );
+                    request);
         }
 
         try {
@@ -296,8 +332,7 @@ public class AssessmentService implements IService<Assessment> {
                             HttpStatus.BAD_REQUEST,
                             "Jawaban tidak boleh sama!",
                             "FV002001",
-                            request
-                    );
+                            request);
                 }
 
                 Long idToFind = answer.getQuestion().getId();
@@ -307,12 +342,12 @@ public class AssessmentService implements IService<Assessment> {
 
                 if (foundQuestion == null) {
                     return new ResponseHandler().generateResponse(
-                            "Question id:" + answer.getQuestion().getId().toString() + " tidak ditemukan dalam Assessment",
+                            "Question id:" + answer.getQuestion().getId().toString()
+                                    + " tidak ditemukan dalam Assessment",
                             HttpStatus.BAD_REQUEST,
                             "Question tidak ditemukan!",
                             "FV002001",
-                            request
-                    );
+                            request);
                 }
 
                 Choice foundChoice = foundQuestion.getChoices().stream().filter(
@@ -327,8 +362,7 @@ public class AssessmentService implements IService<Assessment> {
                             HttpStatus.BAD_REQUEST,
                             "Choice tidak ditemukan!",
                             "FV002001",
-                            request
-                    );
+                            request);
                 }
 
                 if (foundChoice.isTrue()) {
@@ -341,25 +375,24 @@ public class AssessmentService implements IService<Assessment> {
             assessment.getResults().add(result);
             assessmentRepo.save(assessment);
         } catch (Exception e) {
-            strExceptionArr[1] = "addResult(Long id, ResultDTO resultDTO, HttpServletRequest request) --- LINE 189 \n" + RequestCapture.allRequest(request);
+            strExceptionArr[1] = "addResult(Long id, ResultDTO resultDTO, HttpServletRequest request) --- LINE 189 \n"
+                    + RequestCapture.allRequest(request);
             LoggingFile.exceptionStringz(strExceptionArr, e, OtherConfiguration.getFlagLoging());
             LogTable.inputLogRequest(logRequestRepo, strExceptionArr, e, OtherConfiguration.getFlagLogTable());
             return new ResponseHandler().generateResponse(
-                    "Data Gagal Disimpan",//message
-                    HttpStatus.INTERNAL_SERVER_ERROR,//httpstatus
-                    null,//object
-                    "FE-Auth001",//errorCode Fail Error modul-code 001 sequence 001 range 001 - 010
-                    request
-            );
+                    "Data Gagal Disimpan", // message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // httpstatus
+                    null, // object
+                    "FE-Auth001", // errorCode Fail Error modul-code 001 sequence 001 range 001 - 010
+                    request);
         }
 
         return new ResponseHandler().generateResponse(
-                "Result berhasil ditambahkan",//message
-                HttpStatus.CREATED,//httpstatus created
+                "Result berhasil ditambahkan", // message
+                HttpStatus.CREATED, // httpstatus created
                 null,
                 null,
-                request
-        );
+                request);
     }
 
     @Override
@@ -369,7 +402,36 @@ public class AssessmentService implements IService<Assessment> {
 
     @Override
     public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {
-        return null;
+        Assessment existingAssessment = assessmentRepo.findById(id)
+                .orElse(null);
+
+        if (existingAssessment == null) {
+            return new ResponseHandler().generateResponse(
+                    "Assessment not found with id: " + id, // Message
+                    HttpStatus.NOT_FOUND, // HTTP status
+                    null, // Object
+                    "FE002002", // ErrorCode Fail Error (Assessment not found)
+                    request);
+        }
+
+        try {
+            assessmentRepo.deleteById(id);
+        } catch (Exception e) {
+            return new ResponseHandler().generateResponse(
+                    "Data Gagal Dihapus", // Message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // HTTP status
+                    null, // Object
+                    "FE002003", // ErrorCode Fail Error (Gagal menghapus data)
+                    request);
+        }
+
+        return new ResponseHandler().generateResponse(
+                "Data Berhasil Dihapus", // Message
+                HttpStatus.OK, // HTTP status OK
+                null, // Object
+                null, // ErrorCode diisi null ketika data berhasil dihapus
+                request);
+
     }
 
     @Override
@@ -384,39 +446,38 @@ public class AssessmentService implements IService<Assessment> {
             assessment = assessmentRepo.findById(id).orElse(null);
             if (assessment == null) {
                 return new ResponseHandler().generateResponse(
-                        "Data tidak Ditemukan",//message
-                        HttpStatus.NOT_FOUND,//httpstatus
-                        null,//object
-                        "FV002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
-                        request
-                );
+                        "Data tidak Ditemukan", // message
+                        HttpStatus.NOT_FOUND, // httpstatus
+                        null, // object
+                        "FV002071", // errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                        request);
             }
         } catch (Exception e) {
-            strExceptionArr[1] = " findById(HttpServletRequest request) --- LINE 198 \n" + RequestCapture.allRequest(request);
+            strExceptionArr[1] = " findById(HttpServletRequest request) --- LINE 198 \n"
+                    + RequestCapture.allRequest(request);
             LoggingFile.exceptionStringz(strExceptionArr, e, OtherConfiguration.getFlagLoging());
             return new ResponseHandler().generateResponse(
-                    "Data tidak Valid",//message
-                    HttpStatus.INTERNAL_SERVER_ERROR,//httpstatus
-                    null,//object
-                    "FE002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
-                    request
-            );
+                    "Data tidak Valid", // message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // httpstatus
+                    null, // object
+                    "FE002071", // errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                    request);
         }
 
         GetAssessmentDTO transformedAssessment = modelMapper.map(assessment, new TypeToken<GetAssessmentDTO>() {
         }.getType());
 
         return new ResponseHandler().generateResponse(
-                "Data Ditemukan",//message
-                HttpStatus.OK,//httpstatus OK
-                transformedAssessment,//object
-                null,//errorCode diisi null ketika data berhasil disimpan
-                request
-        );
+                "Data Ditemukan", // message
+                HttpStatus.OK, // httpstatus OK
+                transformedAssessment, // object
+                null, // errorCode diisi null ketika data berhasil disimpan
+                request);
     }
 
     @Override
-    public ResponseEntity<Object> findByPage(Integer page, Integer size, String columFirst, String valueFirst, HttpServletRequest request) {
+    public ResponseEntity<Object> findByPage(Integer page, Integer size, String columFirst, String valueFirst,
+            HttpServletRequest request) {
         return null;
     }
 
@@ -431,35 +492,33 @@ public class AssessmentService implements IService<Assessment> {
             assessments = assessmentRepo.findByParticipantsId(id);
             if (assessments.size() == 0) {
                 return new ResponseHandler().generateResponse(
-                        "Assessment tidak Ditemukan",//message
-                        HttpStatus.NOT_FOUND,//httpstatus
-                        null,//object
-                        "FV002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
-                        request
-                );
+                        "Assessment tidak Ditemukan", // message
+                        HttpStatus.NOT_FOUND, // httpstatus
+                        null, // object
+                        "FV002071", // errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                        request);
             }
         } catch (Exception e) {
-            strExceptionArr[1] = " findByUserId(HttpServletRequest request) --- LINE 211 \n" + RequestCapture.allRequest(request);
+            strExceptionArr[1] = " findByUserId(HttpServletRequest request) --- LINE 211 \n"
+                    + RequestCapture.allRequest(request);
             LoggingFile.exceptionStringz(strExceptionArr, e, OtherConfiguration.getFlagLoging());
             return new ResponseHandler().generateResponse(
-                    "Data tidak Valid",//message
-                    HttpStatus.INTERNAL_SERVER_ERROR,//httpstatus
-                    null,//object
-                    "FE002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
-                    request
-            );
+                    "Data tidak Valid", // message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // httpstatus
+                    null, // object
+                    "FE002071", // errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                    request);
         }
-        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(assessments, new TypeToken<List<GetAssessmentDTO>>() {
-        }.getType());
-
+        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(assessments,
+                new TypeToken<List<GetAssessmentDTO>>() {
+                }.getType());
 
         return new ResponseHandler().generateResponse(
-                "Data Ditemukan",//message
-                HttpStatus.OK,//httpstatus OK
-                transformedAssessments,//object
-                null,//errorCode diisi null ketika data berhasil disimpan
-                request
-        );
+                "Data Ditemukan", // message
+                HttpStatus.OK, // httpstatus OK
+                transformedAssessments, // object
+                null, // errorCode diisi null ketika data berhasil disimpan
+                request);
     }
 
     public ResponseEntity<Object> findIncompleteByUserId(Long id, HttpServletRequest request) {
@@ -468,35 +527,34 @@ public class AssessmentService implements IService<Assessment> {
             assessments = assessmentRepo.findByResults_User_IdNot(id);
             if (assessments.size() == 0) {
                 return new ResponseHandler().generateResponse(
-                        "Assessment tidak Ditemukan",//message
-                        HttpStatus.NOT_FOUND,//httpstatus
-                        null,//object
-                        "FV002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
-                        request
-                );
+                        "Assessment tidak Ditemukan", // message
+                        HttpStatus.NOT_FOUND, // httpstatus
+                        null, // object
+                        "FV002071", // errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                        request);
             }
         } catch (Exception e) {
-            strExceptionArr[1] = " findIncompleteByUserId(HttpServletRequest request) --- LINE 211 \n" + RequestCapture.allRequest(request);
+            strExceptionArr[1] = " findIncompleteByUserId(HttpServletRequest request) --- LINE 211 \n"
+                    + RequestCapture.allRequest(request);
             LoggingFile.exceptionStringz(strExceptionArr, e, OtherConfiguration.getFlagLoging());
             return new ResponseHandler().generateResponse(
-                    "Data tidak Valid",//message
-                    HttpStatus.INTERNAL_SERVER_ERROR,//httpstatus
-                    null,//object
-                    "FE002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
-                    request
-            );
+                    "Data tidak Valid", // message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // httpstatus
+                    null, // object
+                    "FE002071", // errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                    request);
         }
 
-        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(assessments, new TypeToken<List<GetAssessmentDTO>>() {}.getType());
-
+        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(assessments,
+                new TypeToken<List<GetAssessmentDTO>>() {
+                }.getType());
 
         return new ResponseHandler().generateResponse(
                 "Data Ditemukan",
                 HttpStatus.OK,
                 transformedAssessments,
                 null,
-                request
-        );
+                request);
     }
 
     @Override
@@ -506,33 +564,33 @@ public class AssessmentService implements IService<Assessment> {
             assessmentList = assessmentRepo.findAll();
             if (assessmentList.size() == 0) {
                 return new ResponseHandler().generateResponse(
-                        "Data tidak Ditemukan",//message
-                        HttpStatus.NOT_FOUND,//httpstatus
-                        null,//object
-                        "FV002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
-                        request
-                );
+                        "Data tidak Ditemukan", // message
+                        HttpStatus.NOT_FOUND, // httpstatus
+                        null, // object
+                        "FV002071", // errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                        request);
             }
         } catch (Exception e) {
-            strExceptionArr[1] = " findAll(HttpServletRequest request) --- LINE 199 \n" + RequestCapture.allRequest(request);
+            strExceptionArr[1] = " findAll(HttpServletRequest request) --- LINE 199 \n"
+                    + RequestCapture.allRequest(request);
             LoggingFile.exceptionStringz(strExceptionArr, e, OtherConfiguration.getFlagLoging());
             return new ResponseHandler().generateResponse(
-                    "Data tidak Valid",//message
-                    HttpStatus.INTERNAL_SERVER_ERROR,//httpstatus
-                    null,//object
-                    "FE002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
-                    request
-            );
+                    "Data tidak Valid", // message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // httpstatus
+                    null, // object
+                    "FE002071", // errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                    request);
         }
-        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(assessmentList, new TypeToken<List<GetAssessmentDTO>>() {}.getType());
+        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(assessmentList,
+                new TypeToken<List<GetAssessmentDTO>>() {
+                }.getType());
 
         return new ResponseHandler().generateResponse(
-                "Data Ditemukan",//message
-                HttpStatus.OK,//httpstatus OK
-                transformedAssessments,//object
-                null,//errorCode diisi null ketika data berhasil disimpan
-                request
-        );
+                "Data Ditemukan", // message
+                HttpStatus.OK, // httpstatus OK
+                transformedAssessments, // object
+                null, // errorCode diisi null ketika data berhasil disimpan
+                request);
     }
 
     @Override

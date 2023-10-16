@@ -20,7 +20,6 @@ public class AssessmentController {
 
     private AssessmentService assessmentService;
 
-
     @Autowired
     public AssessmentController(ModelMapper modelMapper, AssessmentService assessmentService) {
         this.modelMapper = modelMapper;
@@ -28,50 +27,59 @@ public class AssessmentController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> save(@Valid @RequestBody PostAssessmentDTO postAssessmentDTO, HttpServletRequest request)
-    {
-        Assessment assessment = modelMapper.map(postAssessmentDTO, new TypeToken<Assessment>() {}.getType());
-        return assessmentService.save(assessment,request);
+    public ResponseEntity<Object> save(@Valid @RequestBody PostAssessmentDTO postAssessmentDTO,
+            HttpServletRequest request) {
+        Assessment assessment = modelMapper.map(postAssessmentDTO, new TypeToken<Assessment>() {
+        }.getType());
+        return assessmentService.save(assessment, request);
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody PostAssessmentDTO postAssessmentDTO,
+            HttpServletRequest request) {
+        Assessment assessment = modelMapper.map(postAssessmentDTO, new TypeToken<Assessment>() {
+        }.getType());
+        return assessmentService.update(id, postAssessmentDTO, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteAssessment(@PathVariable Long id, HttpServletRequest request) {
+        return assessmentService.delete(id, request);
     }
 
     @GetMapping("/")
-    public ResponseEntity<Object> findAll(HttpServletRequest request)
-    {
+    public ResponseEntity<Object> findAll(HttpServletRequest request) {
         return assessmentService.findAll(request);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> findById(@PathVariable(value = "id") Long id, HttpServletRequest request)
-    {
+    public ResponseEntity<Object> findById(@PathVariable(value = "id") Long id, HttpServletRequest request) {
         return assessmentService.findById(id, request);
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<Object> findByUserId(@PathVariable(value = "id") Long id, HttpServletRequest request)
-    {
+    public ResponseEntity<Object> findByUserId(@PathVariable(value = "id") Long id, HttpServletRequest request) {
         return assessmentService.findByUserId(id, request);
     }
 
     @GetMapping("/user/{id}/incomplete")
-    public ResponseEntity<Object> findIncompleteByUserId(@PathVariable(value = "id") Long id, HttpServletRequest request)
-    {
+    public ResponseEntity<Object> findIncompleteByUserId(@PathVariable(value = "id") Long id,
+            HttpServletRequest request) {
         return assessmentService.findIncompleteByUserId(id, request);
     }
 
-
     @PutMapping("/{id}/participant")
-    public ResponseEntity<Object> addParticipant(@PathVariable(value = "id") Long id, @Valid @RequestBody IdDTO idDTO, HttpServletRequest request)
-            throws Exception
-    {
-        return assessmentService.addParticipant(id,idDTO,request);
+    public ResponseEntity<Object> addParticipant(@PathVariable(value = "id") Long id, @Valid @RequestBody IdDTO idDTO,
+            HttpServletRequest request)
+            throws Exception {
+        return assessmentService.addParticipant(id, idDTO, request);
     }
 
     @PostMapping("/{id}/question")
     public ResponseEntity<Object> addQuestion(
             @PathVariable(value = "id") Long id,
             @Valid @RequestBody AddQuestionDTO addQuestionDTO,
-            HttpServletRequest request
-    ) throws Exception {
+            HttpServletRequest request) throws Exception {
         return assessmentService.addQuestion(id, addQuestionDTO, request);
     }
 
@@ -79,19 +87,18 @@ public class AssessmentController {
     public ResponseEntity<Object> addResult(
             @PathVariable(value = "id") Long id,
             @Valid @RequestBody ResultByAssessmentDTO resultByAssessmentDTO,
-            HttpServletRequest request
-    ) throws Exception {
+            HttpServletRequest request) throws Exception {
         return assessmentService.addResult(id, resultByAssessmentDTO, request);
     }
 
-
-
-//    @PutMapping("/v1/update/{id}")
-//    public ResponseEntity<Object> update(@PathVariable(value = "id") Long id, @RequestBody AssessmentDTO assessmentDTO, HttpServletRequest request)
-//            throws Exception
-//    {
-//        Assessment assessment = modelMapper.map(assessmentDTO, new TypeToken<Assessment>() {}.getType());
-//        return assessmentService.update(id,assessment,request);
-//    }
+    // @PutMapping("/v1/update/{id}")
+    // public ResponseEntity<Object> update(@PathVariable(value = "id") Long id,
+    // @RequestBody AssessmentDTO assessmentDTO, HttpServletRequest request)
+    // throws Exception
+    // {
+    // Assessment assessment = modelMapper.map(assessmentDTO, new
+    // TypeToken<Assessment>() {}.getType());
+    // return assessmentService.update(id,assessment,request);
+    // }
 
 }
