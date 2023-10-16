@@ -1,12 +1,16 @@
 package com.bcaf.tugasakhir.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "Result")
-public class Result {
+public class Result implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id")
@@ -15,19 +19,22 @@ public class Result {
     @Column(name = "FinalScore")
     private double finalScore;
 
-    @Column(name = "CreatedAt")
-    private Date createdAt;
+    @Column(name = "CreatedAt", columnDefinition = "DATETIME NOT NULL default GETDATE()")
+    private Date createdAt = new Date();;
 
+    @JsonBackReference(value = "assessment-result")
     @ManyToOne
-    @JoinColumn(name = "AssessmentId")
+    @JoinColumn(name = "AssessmentId", nullable = false,  updatable = false, insertable = true)
     private Assessment assessment;
 
+    @JsonBackReference(value = "user-result")
     @ManyToOne
     @JoinColumn(name = "UserId")
     private Usr user;
 
-    @OneToMany(mappedBy = "result")
-    private List<UserAnswer> answers;
+    @JsonManagedReference(value = "result-answer")
+    @OneToMany(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Answer> answers;
 
     // getters and setters
 
@@ -63,12 +70,19 @@ public class Result {
         this.assessment = assessment;
     }
 
-    public List<UserAnswer> getAnswers() {
+    public List<Answer> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(List<UserAnswer> answers) {
+    public void setAnswers(List<Answer> answers) {
         this.answers = answers;
     }
 
+    public Usr getUser() {
+        return user;
+    }
+
+    public void setUser(Usr user) {
+        this.user = user;
+    }
 }

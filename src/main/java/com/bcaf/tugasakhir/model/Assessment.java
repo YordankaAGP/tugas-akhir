@@ -1,14 +1,17 @@
 package com.bcaf.tugasakhir.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "Assessment")
-public class Assessment {
+public class Assessment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id")
@@ -23,20 +26,19 @@ public class Assessment {
     @Column(name = "EndDate")
     private Date endDate;
 
-
+    @JsonIgnoreProperties("assessments")
     @ManyToMany
     @JoinTable(name = "MapUserAssessment", joinColumns = @JoinColumn(name = "AssessmentId"), inverseJoinColumns = @JoinColumn(name = "UserId"))
     private List<Usr> participants;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "assessment")
+    @JsonManagedReference(value = "assessment-result")
+    @OneToMany(mappedBy = "assessment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Result> results;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "assessment")
+    @JsonManagedReference(value = "assessment-question")
+    @OneToMany(mappedBy = "assessment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;
 
-    // getters and setters
 
     public Long getId() {
         return id;

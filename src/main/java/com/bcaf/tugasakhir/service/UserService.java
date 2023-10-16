@@ -113,7 +113,39 @@ public class UserService implements IService<Usr> {
 
     @Override
     public ResponseEntity<Object> findAll(HttpServletRequest request) {
-        return null;
+        List<Usr> users;
+        try{
+            users = usrRepo.findAll();
+            if(users.size() == 0)
+            {
+                return new ResponseHandler().generateResponse(
+                        "User tidak Ditemukan",//message
+                        HttpStatus.NOT_FOUND,//httpstatus
+                        null,//object
+                        "FV002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                        request
+                );
+            }
+        }catch (Exception e)
+        {
+            strExceptionArr[1] = " findAll(HttpServletRequest request) --- LINE 131 \n"+ RequestCapture.allRequest(request);
+            LoggingFile.exceptionStringz(strExceptionArr, e, OtherConfiguration.getFlagLoging());
+            return new ResponseHandler().generateResponse(
+                    "Data tidak Valid",//message
+                    HttpStatus.INTERNAL_SERVER_ERROR,//httpstatus
+                    null,//object
+                    "FE002071",//errorCode Fail Validation modul-code 001 sequence 001 range 071 - 080
+                    request
+            );
+        }
+
+        return new ResponseHandler().generateResponse(
+                "Data Ditemukan",//message
+                HttpStatus.OK,//httpstatus OK
+                users,//object
+                null,//errorCode diisi null ketika data berhasil disimpan
+                request
+        );
     }
 
     @Override

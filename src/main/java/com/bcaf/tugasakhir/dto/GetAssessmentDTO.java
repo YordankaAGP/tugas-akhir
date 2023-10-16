@@ -1,9 +1,5 @@
 package com.bcaf.tugasakhir.dto;
 
-import com.bcaf.tugasakhir.model.Question;
-import com.bcaf.tugasakhir.model.Result;
-import com.bcaf.tugasakhir.model.Usr;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Future;
@@ -13,27 +9,18 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
-public class AssessmentDTO {
+public class GetAssessmentDTO {
     private Long id;
 
-    @NotNull(message = "Title Assessment Tidak Boleh Null")
-    @NotBlank(message = "Title Assessment Tidak Boleh Blank")
-    @NotEmpty(message = "Title Assessment Tidak Boleh Kosong")
-    @Length(min = 5,max = 25,message = "Title Assessment Min 5 Maks 25 Karakter")
     private String title;
 
     private String password;
 
-    @NotNull(message = "End Date harus diisi")
-    @Future(message = "End Date harus di masa depan")
     private Date endDate;
 
-    @JsonBackReference
-    private List<Usr> participants;
+    private List<GetParticipantDTO> participants;
 
-    private List<Result> results;
-
-    private List<Question> questions;
+    private List<QuestionDTO> questions;
 
     public Long getId() {
         return id;
@@ -67,27 +54,20 @@ public class AssessmentDTO {
         this.endDate = endDate;
     }
 
-    public List<Usr> getParticipants() {
+
+    public List<GetParticipantDTO> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(List<Usr> participants) {
+    public void setParticipants(List<GetParticipantDTO> participants) {
         this.participants = participants;
     }
 
-    public List<Result> getResults() {
-        return results;
-    }
-
-    public void setResults(List<Result> results) {
-        this.results = results;
-    }
-
-    public List<Question> getQuestions() {
+    public List<QuestionDTO> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(List<Question> questions) {
+    public void setQuestions(List<QuestionDTO> questions) {
         this.questions = questions;
     }
 }

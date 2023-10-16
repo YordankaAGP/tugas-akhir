@@ -6,6 +6,7 @@ import java.util.List;
 
 public class IdDTO {
     @NotNull
+    @NotEmpty
     private List<Long> idList;
     public List<Long> getIdList() {
         return idList;

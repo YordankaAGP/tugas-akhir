@@ -1,10 +1,16 @@
 package com.bcaf.tugasakhir.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "Choice")
-public class Choice {
+public class Choice implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id")
@@ -14,14 +20,17 @@ public class Choice {
     private String value;
     
     @Column(name = "IsTrue")
-    private boolean isTrue;
-    
-    
-    // getters and setters
+    private boolean isTrue = false;
 
+    @JsonBackReference(value = "question-choice")
     @ManyToOne
-    @JoinColumn(name = "QuestionId")
+    @JoinColumn(name = "QuestionId", nullable = false,  updatable = false, insertable = true)
     private Question question;
+
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "choice")
+    private List<Answer> answers;
 
     
     public Long getId() {
@@ -36,20 +45,28 @@ public class Choice {
     public void setValue(String value) {
         this.value = value;
     }
+
     public boolean isTrue() {
         return isTrue;
     }
-    public void setTrue(boolean isTrue) {
-        this.isTrue = isTrue;
+
+    public void setTrue(boolean aTrue) {
+        isTrue = aTrue;
     }
+
     public Question getQuestion() {
         return question;
     }
     public void setQuestion(Question question) {
         this.question = question;
     }
-    
 
-    
+    public List<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
+    }
 }
 

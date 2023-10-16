@@ -1,14 +1,9 @@
 package com.bcaf.tugasakhir.dto;
 
-import com.bcaf.tugasakhir.model.Assessment;
-import com.bcaf.tugasakhir.model.Choice;
-import com.bcaf.tugasakhir.model.Question;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.validation.constraints.NotNull;
 
-import javax.persistence.*;
-import java.util.List;
-
-public class QuestionChoiceDTO {
+public class AnswerChoiceDTO {
+    @NotNull
     private Long id;
 
     private String value;

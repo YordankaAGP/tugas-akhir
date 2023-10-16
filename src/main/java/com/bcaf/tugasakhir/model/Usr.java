@@ -1,15 +1,19 @@
 package com.bcaf.tugasakhir.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "Usr")
-public class Usr {
+public class Usr implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id")
@@ -36,11 +40,11 @@ public class Usr {
     @Column(name = "IsActive")
     private Boolean isActive = true;
 
-    @JsonBackReference
+    @JsonManagedReference(value = "user-result")
     @OneToMany(mappedBy = "user")
     private List<Result> results;
 
-    @JsonBackReference
+    @JsonIgnoreProperties("participants")
     @ManyToMany
     @JoinTable(name = "MapUserAssessment", joinColumns = @JoinColumn(name = "UserId"), inverseJoinColumns = @JoinColumn(name = "AssessmentId"))
     private List<Assessment> assessments;

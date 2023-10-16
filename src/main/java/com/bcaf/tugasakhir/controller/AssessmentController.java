@@ -1,7 +1,6 @@
 package com.bcaf.tugasakhir.controller;
 
-import com.bcaf.tugasakhir.dto.AssessmentDTO;
-import com.bcaf.tugasakhir.dto.IdDTO;
+import com.bcaf.tugasakhir.dto.*;
 import com.bcaf.tugasakhir.model.Assessment;
 import com.bcaf.tugasakhir.service.AssessmentService;
 import org.modelmapper.ModelMapper;
@@ -29,9 +28,9 @@ public class AssessmentController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> save(@Valid @RequestBody AssessmentDTO assessmentDTO, HttpServletRequest request)
+    public ResponseEntity<Object> save(@Valid @RequestBody PostAssessmentDTO postAssessmentDTO, HttpServletRequest request)
     {
-        Assessment assessment = modelMapper.map(assessmentDTO, new TypeToken<Assessment>() {}.getType());
+        Assessment assessment = modelMapper.map(postAssessmentDTO, new TypeToken<Assessment>() {}.getType());
         return assessmentService.save(assessment,request);
     }
 
@@ -41,18 +40,48 @@ public class AssessmentController {
         return assessmentService.findAll(request);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> findById(@PathVariable(value = "id") Long id, HttpServletRequest request)
+    {
+        return assessmentService.findById(id, request);
+    }
+
     @GetMapping("/user/{id}")
     public ResponseEntity<Object> findByUserId(@PathVariable(value = "id") Long id, HttpServletRequest request)
     {
         return assessmentService.findByUserId(id, request);
     }
 
+    @GetMapping("/user/{id}/incomplete")
+    public ResponseEntity<Object> findIncompleteByUserId(@PathVariable(value = "id") Long id, HttpServletRequest request)
+    {
+        return assessmentService.findIncompleteByUserId(id, request);
+    }
+
 
     @PutMapping("/{id}/participant")
-    public ResponseEntity<Object> addParticipant(@PathVariable(value = "id") Long id, @RequestBody IdDTO idDTO, HttpServletRequest request)
+    public ResponseEntity<Object> addParticipant(@PathVariable(value = "id") Long id, @Valid @RequestBody IdDTO idDTO, HttpServletRequest request)
             throws Exception
     {
         return assessmentService.addParticipant(id,idDTO,request);
+    }
+
+    @PostMapping("/{id}/question")
+    public ResponseEntity<Object> addQuestion(
+            @PathVariable(value = "id") Long id,
+            @Valid @RequestBody AddQuestionDTO addQuestionDTO,
+            HttpServletRequest request
+    ) throws Exception {
+        return assessmentService.addQuestion(id, addQuestionDTO, request);
+    }
+
+    @PostMapping("/{id}/result")
+    public ResponseEntity<Object> addResult(
+            @PathVariable(value = "id") Long id,
+            @Valid @RequestBody ResultByAssessmentDTO resultByAssessmentDTO,
+            HttpServletRequest request
+    ) throws Exception {
+        return assessmentService.addResult(id, resultByAssessmentDTO, request);
     }
 
 
