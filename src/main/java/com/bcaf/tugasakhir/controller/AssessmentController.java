@@ -34,6 +34,19 @@ public class AssessmentController {
         return assessmentService.save(assessment,request);
     }
 
+    @PostMapping("/{id}")
+    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody PostAssessmentDTO postAssessmentDTO,
+            HttpServletRequest request) {
+        Assessment assessment = modelMapper.map(postAssessmentDTO, new TypeToken<Assessment>() {
+        }.getType());
+        return assessmentService.update(id, postAssessmentDTO, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteAssessment(@PathVariable Long id, HttpServletRequest request) {
+        return assessmentService.delete(id, request);
+    }
+
     @GetMapping("/")
     public ResponseEntity<Object> findAll(HttpServletRequest request)
     {
@@ -90,14 +103,14 @@ public class AssessmentController {
         return assessmentService.addResult(id, resultByAssessmentDTO, request);
     }
 
-
-
-//    @PutMapping("/v1/update/{id}")
-//    public ResponseEntity<Object> update(@PathVariable(value = "id") Long id, @RequestBody AssessmentDTO assessmentDTO, HttpServletRequest request)
-//            throws Exception
-//    {
-//        Assessment assessment = modelMapper.map(assessmentDTO, new TypeToken<Assessment>() {}.getType());
-//        return assessmentService.update(id,assessment,request);
-//    }
+    // @PutMapping("/v1/update/{id}")
+    // public ResponseEntity<Object> update(@PathVariable(value = "id") Long id,
+    // @RequestBody AssessmentDTO assessmentDTO, HttpServletRequest request)
+    // throws Exception
+    // {
+    // Assessment assessment = modelMapper.map(assessmentDTO, new
+    // TypeToken<Assessment>() {}.getType());
+    // return assessmentService.update(id,assessment,request);
+    // }
 
 }

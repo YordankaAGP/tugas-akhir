@@ -20,9 +20,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -368,9 +371,82 @@ public class AssessmentService implements IService<Assessment> {
         return null;
     }
 
+    public ResponseEntity<Object> update(Long id, PostAssessmentDTO postAssessmentDTO, HttpServletRequest request) {
+        if (postAssessmentDTO == null) {
+            return new ResponseHandler().generateResponse(
+                    "Data tidak Valid", // Message
+                    HttpStatus.BAD_REQUEST, // HTTP status
+                    null, // Object
+                    "FV002001", // ErrorCode Fail Validation modul-code 001 sequence 001 range 001 - 010
+                    request);
+        }
+
+        Assessment existingAssessment = assessmentRepo.findById(id)
+                .orElse(null);
+
+        if (existingAssessment == null) {
+            return new ResponseHandler().generateResponse(
+                    "Assessment not found with id: " + id, // Message
+                    HttpStatus.NOT_FOUND, // HTTP status
+                    null, // Object
+                    "FE002002", // ErrorCode Fail Error (Assessment not found)
+                    request);
+        }
+
+        try {
+            // Map fields from updateAssessmentDTO to existingAssessment
+            modelMapper.map(postAssessmentDTO, existingAssessment);
+
+            assessmentRepo.save(existingAssessment);
+        } catch (Exception e) {
+
+            return new ResponseHandler().generateResponse(
+                    "Data Gagal Diperbarui", // Message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // HTTP status
+                    null, // Object
+                    "FE002001", // ErrorCode Fail Error modul-code 001 sequence 001 range 001 - 010
+                    request);
+        }
+
+        return new ResponseHandler().generateResponse(
+                "Data Berhasil Diperbarui", // Message
+                HttpStatus.OK, // HTTP status OK
+                null, // Object
+                null, // ErrorCode diisi null ketika data berhasil diperbarui
+                request);
+    }
+
     @Override
     public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {
-        return null;
+        Assessment existingAssessment = assessmentRepo.findById(id)
+                .orElse(null);
+
+        if (existingAssessment == null) {
+            return new ResponseHandler().generateResponse(
+                    "Assessment not found with id: " + id, // Message
+                    HttpStatus.NOT_FOUND, // HTTP status
+                    null, // Object
+                    "FE002002", // ErrorCode Fail Error (Assessment not found)
+                    request);
+        }
+
+        try {
+            assessmentRepo.deleteById(id);
+        } catch (Exception e) {
+            return new ResponseHandler().generateResponse(
+                    "Data Gagal Dihapus", // Message
+                    HttpStatus.INTERNAL_SERVER_ERROR, // HTTP status
+                    null, // Object
+                    "FE002003", // ErrorCode Fail Error (Gagal menghapus data)
+                    request);
+        }
+
+        return new ResponseHandler().generateResponse(
+                "Data Berhasil Dihapus", // Message
+                HttpStatus.OK, // HTTP status OK
+                null, // Object
+                null, // ErrorCode diisi null ketika data berhasil dihapus
+                request);
     }
 
     @Override
