@@ -13,6 +13,8 @@ public class QuestionChoiceDTO {
 
     private String value;
 
+    private boolean isTrue;
+
     public Long getId() {
         return id;
     }
@@ -27,5 +29,13 @@ public class QuestionChoiceDTO {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public boolean isTrue() {
+        return isTrue;
+    }
+
+    public void setTrue(boolean aTrue) {
+        isTrue = aTrue;
     }
 }

@@ -25,6 +25,7 @@ public class Usr implements Serializable {
     @Column(name = "Email",unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(name = "Password")
     private String password;
 

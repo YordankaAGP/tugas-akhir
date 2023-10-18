@@ -1,16 +1,11 @@
 package com.bcaf.tugasakhir.dto;
 
 import com.bcaf.tugasakhir.model.Result;
-import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
-public class GetAssessmentDTO {
+public class GetLightAssessmentDTO {
     private Long id;
 
     private String title;
@@ -19,9 +14,7 @@ public class GetAssessmentDTO {
 
     private Date endDate;
 
-    private List<GetParticipantDTO> participants;
-
-    private List<Result> results;
+    private List<ResultByUserDTO> results;
 
     private List<QuestionDTO> questions;
 
@@ -57,15 +50,6 @@ public class GetAssessmentDTO {
         this.endDate = endDate;
     }
 
-
-    public List<GetParticipantDTO> getParticipants() {
-        return participants;
-    }
-
-    public void setParticipants(List<GetParticipantDTO> participants) {
-        this.participants = participants;
-    }
-
     public List<QuestionDTO> getQuestions() {
         return questions;
     }
@@ -74,11 +58,11 @@ public class GetAssessmentDTO {
         this.questions = questions;
     }
 
-    public List<Result> getResults() {
+    public List<ResultByUserDTO> getResults() {
         return results;
     }
 
-    public void setResults(List<Result> results) {
+    public void setResults(List<ResultByUserDTO> results) {
         this.results = results;
     }
 }

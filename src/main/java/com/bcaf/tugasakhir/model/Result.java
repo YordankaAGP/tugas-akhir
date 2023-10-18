@@ -28,7 +28,7 @@ public class Result implements Serializable {
     private Assessment assessment;
 
     @JsonBackReference(value = "user-result")
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "UserId")
     private Usr user;
 

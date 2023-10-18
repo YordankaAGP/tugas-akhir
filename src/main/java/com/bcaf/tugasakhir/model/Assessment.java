@@ -27,12 +27,12 @@ public class Assessment implements Serializable {
     private Date endDate;
 
     @JsonIgnoreProperties("assessments")
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "MapUserAssessment", joinColumns = @JoinColumn(name = "AssessmentId"), inverseJoinColumns = @JoinColumn(name = "UserId"))
     private List<Usr> participants;
 
     @JsonManagedReference(value = "assessment-result")
-    @OneToMany(mappedBy = "assessment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "assessment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Result> results;
 
     @JsonManagedReference(value = "assessment-question")

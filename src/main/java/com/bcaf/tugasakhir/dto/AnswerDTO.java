@@ -16,12 +16,11 @@ public class AnswerDTO {
     private String text;
 
     @NotNull(message = "Choice Tidak Boleh Null")
-    private AnswerChoiceDTO choice;
+    private Choice choice;
 
     @NotNull(message = "Question Tidak Boleh Null")
-    private AnswerQuestionDTO question;
+    private Question question;
 
-    @NotNull(message = "Score Tidak Boleh Null")
     @Min(0)
     @Max(1)
     private Float score;
@@ -42,11 +41,11 @@ public class AnswerDTO {
         this.text = text;
     }
 
-    public AnswerChoiceDTO getChoice() {
+    public Choice getChoice() {
         return choice;
     }
 
-    public void setChoice(AnswerChoiceDTO choice) {
+    public void setChoice(Choice choice) {
         this.choice = choice;
     }
 
@@ -58,11 +57,11 @@ public class AnswerDTO {
         this.score = score;
     }
 
-    public AnswerQuestionDTO getQuestion() {
+    public Question getQuestion() {
         return question;
     }
 
-    public void setQuestion(AnswerQuestionDTO question) {
+    public void setQuestion(Question question) {
         this.question = question;
     }
 }

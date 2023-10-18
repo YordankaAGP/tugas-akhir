@@ -335,6 +335,10 @@ public class AssessmentService implements IService<Assessment> {
                     );
                 }
 
+                if(foundQuestion.getType().equals(QuestionType.CHOICE)) {
+                    answer.setScore(1F);
+                }
+
                 if (foundChoice.isTrue()) {
                     answer.setScore(1F);
                     totalScore += 1;
@@ -526,7 +530,7 @@ public class AssessmentService implements IService<Assessment> {
                     request
             );
         }
-        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(assessments, new TypeToken<List<GetAssessmentDTO>>() {
+        List<GetLightAssessmentDTO> transformedAssessments = modelMapper.map(assessments, new TypeToken<List<GetLightAssessmentDTO>>() {
         }.getType());
 
 
@@ -571,7 +575,7 @@ public class AssessmentService implements IService<Assessment> {
         ).collect(Collectors.toList());
 
 
-        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(filteredAssessments, new TypeToken<List<GetAssessmentDTO>>() {}.getType());
+        List<GetLightAssessmentDTO> transformedAssessments = modelMapper.map(filteredAssessments, new TypeToken<List<GetLightAssessmentDTO>>() {}.getType());
 
         return new ResponseHandler().generateResponse(
                 "Data Ditemukan",
@@ -610,11 +614,10 @@ public class AssessmentService implements IService<Assessment> {
         List<Assessment> filteredAssessments = assessments.stream().filter(
                 assessment -> !assessment.getResults().stream().anyMatch(
                         result -> result.getUser().getId().equals(id)
-                    )
-                ).collect(Collectors.toList());
+                )).collect(Collectors.toList());
 
 
-        List<GetAssessmentDTO> transformedAssessments = modelMapper.map(filteredAssessments, new TypeToken<List<GetAssessmentDTO>>() {}.getType());
+        List<GetLightAssessmentDTO> transformedAssessments = modelMapper.map(filteredAssessments, new TypeToken<List<GetLightAssessmentDTO>>() {}.getType());
 
         return new ResponseHandler().generateResponse(
                 "Data Ditemukan",

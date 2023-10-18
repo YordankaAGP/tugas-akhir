@@ -19,7 +19,6 @@ public class Choice implements Serializable {
     @Column(name = "Value")
     private String value;
 
-    @JsonIgnore
     @Column(name = "IsTrue")
     private boolean isTrue = false;
 
@@ -27,7 +26,6 @@ public class Choice implements Serializable {
     @ManyToOne
     @JoinColumn(name = "QuestionId", nullable = false,  updatable = false, insertable = true)
     private Question question;
-
 
     @JsonIgnore
     @OneToMany(mappedBy = "choice")
